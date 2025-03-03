@@ -134,3 +134,70 @@ Password: 123
 ```
 
 #
+
+# Backend Setup
+
+## Environment Variables (.env File)
+```
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=sieunhangao0985@gmail.com
+SMTP_PASS=qqxl iaxs iyiu mqwn
+
+
+FRONTEND_URL=http://localhost:3000
+BACKEND_URL=http://localhost:3002
+```
+
+
+## Configuring Google OAuth (server/src/config/passport.config.ts)
+
+If config/passport.config.ts is missing, create the file with the following content:
+
+```
+import passport from 'passport';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import { AppDataSource } from '../database/db';
+import { User } from '../entities/user.entity';
+
+const userRepository = AppDataSource.getRepository(User);
+
+passport.use(
+    new GoogleStrategy(
+        {
+            clientID: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            callbackURL: `${process.env.BACKEND_URL}/auth/google/callback`,
+            scope: ['profile', 'email'],
+        },
+        async (_accessToken, _refreshToken, profile, done) => {
+            try {
+                console.log('Google Profile:', profile);
+                const googleUser = {
+                    googleId: profile.id,
+                    email: profile.emails![0].value,
+                    username: profile.displayName,
+                };
+                done(null, googleUser);
+            } catch (error) {
+                console.error('GoogleStrategy Error:', error);
+                done(error as Error, undefined);
+            }
+        }
+    )
+);
+
+passport.serializeUser((user: any, done) => {
+    done(null, user);
+});
+
+passport.deserializeUser((user: any, done) => {
+    done(null, user);
+});
+```
+
+Happy coding!
