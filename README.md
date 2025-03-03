@@ -140,7 +140,7 @@ Password: 123
 ## Environment Variables (.env File)
 ```
 GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
+GOOGLE_CLIENT_SECRET=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
 
 
 SMTP_HOST=smtp.gmail.com
